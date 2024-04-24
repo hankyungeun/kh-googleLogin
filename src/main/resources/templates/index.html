@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>KH Home page</title>
+  <style>
+    #boardList {text-align: center;}
+    #boardList>tbody>tr:hover{cursor:pointer;}
+  </style>
+</head>
+<body>
+<div th:include="common/header"></div>
+<div class="outer">
+  <br><br>
+  <div class="innerOuter" style="padding: 5% 10%">
+    <h2>인기 게시글(TOP 5)</h2>
+    <br>
+    <table id="boardList" class="table table-hover" align="center">
+      <thead>
+      <th>글번호</th>
+      <th>제목</th>
+      <th>작성자</th>
+      <th>조회수</th>
+      <th>작성일</th>
+      <th>첨부파일</th>
+      </thead>
+
+      <tbody id="topList">
+      </tbody>
+    </table>
+    <br>
+    <script>
+      $(function(){
+        showBoardTopList();
+        // 동적으로 생성된 요소에 이벤트 처리 방법
+        $(document).on('click', '#boardList>tbody>tr', function() {
+          location.href = 'detail.bo?bno=' + $(this).children().eq(0).text();
+        });
+      })
+
+      const showBoardTopList = () => {
+          $('#topList').empty();
+          $.ajax({
+            url: 'topList.bo',
+            success: function (result) {
+              console.log(result)
+              $(result).each(function (index, board) {
+                var icon = board.originName ? '&#128190;' : '';
+                $("#topList").append(
+                    `<tr>
+                                <td>` + board.boardNo + `</td>
+                                <td>` + board.boardTitle + `</td>
+                                <td>` + board.boardWriter + `</td>
+                                <td>` + board.count + `</td>
+                                <td>` + board.createDate + `</td>
+                                <td>` + icon + `</td>
+                              </tr>`
+                );
+              })
+            },
+            error: function () {
+              console.log("인기 게시글 조회 통신 실패");
+            }
+          });
+      }
+    </script>
+    <br><br>
+  </div>
+</div>
+<div th:include="common/footer"></div>
+</body>
+</html>
